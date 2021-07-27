@@ -6,3 +6,10 @@ templates:
       x: 15
       y: 1
       z: 15
+  pipes-small:
+    segmentSize: 7
+    connectorDepth: 1
+    playerSpawnOffset:
+      x: 3
+      y: 1
+      z: 3
