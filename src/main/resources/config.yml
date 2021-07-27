@@ -1,0 +1,8 @@
+templates:
+  test:
+    segmentSize: 31
+    connectorDepth: 3
+    playerSpawnOffset:
+      x: 15
+      y: 1
+      z: 15

@@ -1,0 +1,8 @@
+name: "SennetMazes"
+description: "Custom maze server"
+version: "${version}"
+
+api-version: "1.17"
+main: "me.senseiju.sennetmazes.SennetMazes"
+depend:
+  - "FastAsyncWorldEdit"
