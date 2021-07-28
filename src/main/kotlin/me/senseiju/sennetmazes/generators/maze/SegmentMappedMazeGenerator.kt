@@ -1,10 +1,11 @@
-package me.senseiju.sennetmazes.generators
+package me.senseiju.sennetmazes.generators.maze
 
 import me.senseiju.sennetmazes.Cardinal
+import me.senseiju.sennetmazes.generators.maze.MazeGenerator
 import me.senseiju.sennetmazes.templates.Segment
 import me.senseiju.sennetmazes.templates.SegmentType
 
-class SegmentMappedMazeGenerator(x: Int, y: Int) {
+private class SegmentMappedMazeGenerator(x: Int, y: Int) {
     private val maze = MazeGenerator(x, y).maze
 
     fun mapMazeToSegments(): List<List<Segment>> {
@@ -77,3 +78,5 @@ class SegmentMappedMazeGenerator(x: Int, y: Int) {
         return openEdges
     }
 }
+
+fun generateSegmentMappedMaze(x: Int, y: Int) = SegmentMappedMazeGenerator(x, y).mapMazeToSegments()

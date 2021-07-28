@@ -3,6 +3,7 @@ package me.senseiju.sennetmazes.templates
 import com.sk89q.worldedit.math.BlockVector3
 import me.senseiju.sennetmazes.SennetMazes
 import me.senseiju.sennetmazes.service.Service
+import org.bukkit.Location
 import java.io.File
 import java.util.jar.JarFile
 
@@ -33,10 +34,11 @@ class TemplateService(private val plugin: SennetMazes) : Service() {
 
             copyTemplatesFromResources(templateName)
 
-            val playerSpawnOffset = BlockVector3.at(
-                templateSection.getInt("playerSpawnOffset.x"),
-                templateSection.getInt("playerSpawnOffset.y"),
-                templateSection.getInt("playerSpawnOffset.z")
+            val playerSpawnOffset = Location(
+                null,
+                templateSection.getDouble("playerSpawnOffset.x"),
+                templateSection.getDouble("playerSpawnOffset.y"),
+                templateSection.getDouble("playerSpawnOffset.z")
             )
 
             templates[templateName] = Template(

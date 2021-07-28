@@ -4,6 +4,7 @@ import me.mattstudios.mf.base.CommandManager
 import me.senseiju.sennetmazes.commands.SennetMazesCommand
 import me.senseiju.sennetmazes.service.ServiceProvider
 import me.senseiju.sennetmazes.templates.TemplateService
+import me.senseiju.sennetmazes.world.WorldService
 import me.senseiju.sentils.extensions.MessageProvider
 import me.senseiju.sentils.storage.ConfigFile
 import org.bukkit.plugin.java.JavaPlugin
@@ -19,7 +20,8 @@ class SennetMazes : JavaPlugin() {
 
     override fun onEnable() {
         ServiceProvider.add(
-            TemplateService(this)
+            TemplateService(this),
+            WorldService(this)
         )
 
         commandManager = CommandManager(this)

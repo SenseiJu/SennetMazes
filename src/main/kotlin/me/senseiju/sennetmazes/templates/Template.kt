@@ -1,7 +1,7 @@
 package me.senseiju.sennetmazes.templates
 
-import com.fastasyncworldedit.core.FaweAPI
 import com.fastasyncworldedit.core.util.EditSessionBuilder
+import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
 import com.sk89q.worldedit.function.operation.Operations
@@ -12,6 +12,7 @@ import com.sk89q.worldedit.world.World
 import me.senseiju.sennetmazes.Cardinal
 import me.senseiju.sennetmazes.SennetMazes
 import me.senseiju.sennetmazes.exceptions.InvalidTemplateSegmentFormatException
+import org.bukkit.Location
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
@@ -21,9 +22,11 @@ class Template(
     private val name: String,
     private val segmentSize: Int,
     private val connectorDepth: Int,
-    private val playerSpawnOffset: BlockVector3
+    private val playerSpawnOffset: Location
 ) {
     private val segments = EnumMap<SegmentType, Clipboard>(SegmentType::class.java)
+
+    val sizeWithDepth = segmentSize + connectorDepth
 
     init {
         SegmentType.values().forEach {
@@ -42,8 +45,8 @@ class Template(
         }
     }
 
-    private fun pasteSegment(segment: SegmentType, rotation: Double, world: World, vector: BlockVector3) {
-        val clipboardHolder = ClipboardHolder(segments[segment] ?: return)
+    fun pasteSegment(segmentType: SegmentType, rotation: Double, world: World, vector: BlockVector3) {
+        val clipboardHolder = ClipboardHolder(segments[segmentType] ?: return)
         clipboardHolder.transform = AffineTransform().rotateY(rotation)
 
         val rotationOffset = when (rotation) {
@@ -63,38 +66,7 @@ class Template(
         }
     }
 
-    fun pasteMaze(
-        mappedMaze: List<List<Segment>>,
-        world: World,
-        startingVector: BlockVector3,
-        onFinish: () -> Unit
-    ) {
-        FaweAPI.getTaskManager().async {
-            var currentVector = startingVector
-
-            mappedMaze.forEachIndexed { i, segmentRotations ->
-                segmentRotations.forEachIndexed { _, segmentRotation ->
-                    pasteSegment(
-                        segmentRotation.segmentType,
-                        segmentRotation.rotation,
-                        world,
-                        currentVector
-                    )
-
-                    pasteConnectorSegments(segmentRotation, world, currentVector)
-
-                    currentVector = currentVector.add(0, 0, (segmentSize + connectorDepth))
-                }
-
-                currentVector = startingVector.add((segmentSize + connectorDepth) * (i + 1), 0, 0)
-            }
-
-            onFinish()
-        }
-    }
-
-
-    private fun pasteConnectorSegments(segment: Segment, world: World, vector: BlockVector3) {
+    fun pasteConnectorSegments(segment: Segment, world: World, vector: BlockVector3) {
         var currentVector = vector
 
         if (connectorDepth > 0) {
@@ -121,4 +93,6 @@ class Template(
             }
         }
     }
+
+    fun calculatePlayerSpawn(firstSegment: Location) = firstSegment.clone().add(with (playerSpawnOffset) {this.world = firstSegment.world; this})
 }

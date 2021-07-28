@@ -1,4 +1,4 @@
-package me.senseiju.sennetmazes.generators
+package me.senseiju.sennetmazes.generators.maze
 
 import java.util.*
 import me.senseiju.sennetmazes.Cardinal

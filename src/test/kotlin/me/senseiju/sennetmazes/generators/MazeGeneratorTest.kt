@@ -1,5 +1,6 @@
 package me.senseiju.sennetmazes.generators
 
+import me.senseiju.sennetmazes.generators.maze.MazeGenerator
 import org.junit.jupiter.api.Test
 
 class MazeGeneratorTest {
