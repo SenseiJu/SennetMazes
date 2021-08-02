@@ -17,40 +17,37 @@ import java.util.*
 
 class WorldService(private val plugin: SennetMazes) : Service() {
     private val worldContainerPath = plugin.server.worldContainer.absolutePath.removeSuffix("\\.")
+    private val mazeWorld = createWorld()
 
-    val activeWorlds = arrayListOf<World>()
+    private var nextLocation = Location(mazeWorld, 0.0, 5.0, 0.0)
 
-    override fun onDisable() {
-        activeWorlds.forEach {
-            deleteWorld(it)
-        }
-    }
-
-    override fun onReload() {
-
-    }
-
-    fun generateMazeWorld(player: Player, template: Template, x: Int, y: Int) {
-        val world = createWorld()
-        if (world == null) {
-            player.sendConfigMessage("WORLD-GENERATION-FAILED")
-            return
+    fun generateNextMaze(player: Player, template: Template, x: Int, y: Int) {
+        with (nextLocation.clone()) {
+            TemplatePaster(
+                plugin,
+                template,
+                generateSegmentMappedMaze(x, y),
+                this
+            ) {
+                player.teleport(template.calculatePlayerSpawn(this))
+            }
         }
 
-        val startLocation = Location(world, 0.0, 5.0, 0.0)
-        TemplatePaster(
-            template,
-            generateSegmentMappedMaze(x, y),
-            startLocation
-        ) {
-            player.teleport(template.calculatePlayerSpawn(startLocation))
-        }.paste()
-
-        activeWorlds.add(world)
+        nextLocation.x = (template.sizeWithDepth * x) + 5.0
     }
 
-    private fun createWorld(): World? {
-        val world = WorldCreator("mazes/${UUID.randomUUID()}").generator(VoidChunkGenerator()).createWorld() ?: return null
+    fun deleteWorld() {
+        mazeWorld.players.forEach {
+            it.teleport(Location(plugin.server.getWorld("world"), 0.0, 100.0, 0.0))
+        }
+        plugin.server.unloadWorld(mazeWorld, false)
+
+        File(worldContainerPath, mazeWorld.name).deleteRecursively()
+    }
+
+    private fun createWorld(): World {
+        val world = WorldCreator("maze").generator(VoidChunkGenerator()).createWorld()
+            ?: throw WorldLoadException("maze")
 
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false)
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false)
@@ -58,13 +55,8 @@ class WorldService(private val plugin: SennetMazes) : Service() {
 
         return world
     }
+}
 
-    private fun deleteWorld(world: World) {
-        world.players.forEach {
-            it.teleport(Location(plugin.server.getWorld("world"), 0.0, 100.0, 0.0))
-        }
-        plugin.server.unloadWorld(world, false)
-
-        File(worldContainerPath, world.name).deleteRecursively()
-    }
+private class WorldLoadException(world: String) : Exception() {
+    override val message = "Failed to create world '$world'"
 }

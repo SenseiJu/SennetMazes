@@ -6,7 +6,8 @@ enum class SegmentType {
     CROSSROADS,
     T,
     U,
-    CONNECTOR;
+    CONNECTOR,
+    EXIT;
 
     fun toSchemFileName() = "${toString().lowercase()}.schem"
 }

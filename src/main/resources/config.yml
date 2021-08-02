@@ -2,6 +2,7 @@ templates:
   test:
     segmentSize: 31
     connectorDepth: 3
+    exitSegmentSize: 7
     playerSpawnOffset:
       x: 15.5
       y: 1
@@ -9,13 +10,23 @@ templates:
   pipes-small:
     segmentSize: 7
     connectorDepth: 1
+    exitSegmentSize: 3
     playerSpawnOffset:
       x: 3.5
       y: 1
       z: -3.5
   frax:
     segmentSize: 15
+    exitSegmentSize: 3
     playerSpawnOffset:
       x: 7.5
       y: 1
       z: -7.5
+  medival:
+    segmentSize: 25
+    exitSegmentSize: 15
+    connectorDepth: 3
+    playerSpawnOffset:
+      x: 12.5
+      y: 1
+      z: -12.5

@@ -1,7 +1,6 @@
 package me.senseiju.sennetmazes.templates
 
 import com.fastasyncworldedit.core.util.EditSessionBuilder
-import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
 import com.sk89q.worldedit.function.operation.Operations
@@ -11,7 +10,6 @@ import com.sk89q.worldedit.session.ClipboardHolder
 import com.sk89q.worldedit.world.World
 import me.senseiju.sennetmazes.Cardinal
 import me.senseiju.sennetmazes.SennetMazes
-import me.senseiju.sennetmazes.exceptions.InvalidTemplateSegmentFormatException
 import org.bukkit.Location
 import java.io.File
 import java.io.FileInputStream
@@ -22,11 +20,13 @@ class Template(
     private val name: String,
     private val segmentSize: Int,
     private val connectorDepth: Int,
+    exitSegmentSize: Int,
     private val playerSpawnOffset: Location
 ) {
     private val segments = EnumMap<SegmentType, Clipboard>(SegmentType::class.java)
 
     val sizeWithDepth = segmentSize + connectorDepth
+    private val exitSegmentOffset = (segmentSize - exitSegmentSize) / 2
 
     init {
         SegmentType.values().forEach {
@@ -66,6 +66,10 @@ class Template(
         }
     }
 
+    fun pasteExitSegment(world: World, vector: BlockVector3) {
+        pasteSegment(SegmentType.EXIT, 0.0, world, vector.add(exitSegmentOffset, 0, -exitSegmentOffset))
+    }
+
     fun pasteConnectorSegments(segment: Segment, world: World, vector: BlockVector3) {
         var currentVector = vector
 
@@ -95,4 +99,8 @@ class Template(
     }
 
     fun calculatePlayerSpawn(firstSegment: Location) = firstSegment.clone().add(with (playerSpawnOffset) {this.world = firstSegment.world; this})
+}
+
+private class InvalidTemplateSegmentFormatException(template: String, segment: SegmentType) : Exception() {
+    override val message: String = "Invalid format found for {$segment} segment from {$template} template"
 }

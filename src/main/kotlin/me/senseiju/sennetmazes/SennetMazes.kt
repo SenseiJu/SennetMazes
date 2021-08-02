@@ -31,6 +31,8 @@ class SennetMazes : JavaPlugin() {
     }
 
     override fun onDisable() {
+        ServiceProvider.get<WorldService>().deleteWorld()
+
         ServiceProvider.disableAll()
     }
 }

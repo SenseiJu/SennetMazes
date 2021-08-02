@@ -39,16 +39,6 @@ class SennetMazesCommand(private val plugin: SennetMazes) : CommandBase() {
 
         val template = templateService.getTemplate(templateName) ?: return
 
-        worldService.generateMazeWorld(sender, template, xSize, ySize)
-    }
-
-    @SubCommand("world")
-    fun world(sender: Player) {
-        println(plugin.server.worlds)
-
-        val world = plugin.server.createWorld(WorldCreator("mazes/${UUID.randomUUID()}").generator(VoidChunkGenerator())) ?: return
-
-        worldService.activeWorlds.add(world)
-        sender.teleport(Location(world, 0.0, 100.0, 0.0))
+        worldService.generateNextMaze(sender, template, xSize, ySize)
     }
 }

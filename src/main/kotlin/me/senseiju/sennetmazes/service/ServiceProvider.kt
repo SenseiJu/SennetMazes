@@ -1,7 +1,5 @@
 package me.senseiju.sennetmazes.service
 
-import me.senseiju.sennetmazes.exceptions.NoServiceFoundException
-
 class ServiceProvider {
     companion object {
         val services = hashSetOf<Service>()
@@ -40,4 +38,8 @@ class ServiceProvider {
             }
         }
     }
+}
+
+class NoServiceFoundException : Exception() {
+    override val message: String = "No service found for this type"
 }

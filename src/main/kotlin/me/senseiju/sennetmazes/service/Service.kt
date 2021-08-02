@@ -1,6 +1,6 @@
 package me.senseiju.sennetmazes.service
 
 abstract class Service {
-    abstract fun onDisable()
-    abstract fun onReload()
+    open fun onDisable() {}
+    open fun onReload() {}
 }

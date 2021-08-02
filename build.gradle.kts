@@ -22,6 +22,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:+")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:+")
     implementation("com.github.SenseiJu:Sentils:326a526bc8")
     implementation("dev.triumphteam:triumph-gui:+")
     implementation("me.mattstudios.utils:matt-framework:1.4")
@@ -57,4 +58,3 @@ tasks {
         useJUnitPlatform()
     }
 }
-

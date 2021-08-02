@@ -1,9 +1,10 @@
 package me.senseiju.sennetmazes.templates
 
-import com.sk89q.worldedit.math.BlockVector3
 import me.senseiju.sennetmazes.SennetMazes
+import me.senseiju.sennetmazes.extensions.isNumber
 import me.senseiju.sennetmazes.service.Service
 import org.bukkit.Location
+import org.bukkit.configuration.ConfigurationSection
 import java.io.File
 import java.util.jar.JarFile
 
@@ -30,24 +31,46 @@ class TemplateService(private val plugin: SennetMazes) : Service() {
         val templatesSection = plugin.config.getConfigurationSection("templates") ?: return
 
         templatesSection.getKeys(false).forEach { templateName ->
-            val templateSection = templatesSection.getConfigurationSection(templateName) ?: return@forEach
+            with (templatesSection.getConfigurationSection(templateName)) {
+                if (this == null || !checkConfig(this)) {
+                    println("ERROR: Could not load template '$templateName' because of invalid config")
+                    return@forEach
+                }
 
-            copyTemplatesFromResources(templateName)
+                copyTemplatesFromResources(templateName)
 
-            val playerSpawnOffset = Location(
-                null,
-                templateSection.getDouble("playerSpawnOffset.x"),
-                templateSection.getDouble("playerSpawnOffset.y"),
-                templateSection.getDouble("playerSpawnOffset.z")
-            )
+                val playerSpawnOffset = Location(
+                    null,
+                    getDouble("playerSpawnOffset.x"),
+                    getDouble("playerSpawnOffset.y"),
+                    getDouble("playerSpawnOffset.z")
+                )
 
-            templates[templateName] = Template(
-                plugin,
-                templateName,
-                templateSection.getInt("segmentSize", 15),
-                templateSection.getInt("connectorDepth", 0),
-                playerSpawnOffset
-            )
+                try {
+                    val template = Template(
+                        plugin,
+                        templateName,
+                        getInt("segmentSize"),
+                        getInt("connectorDepth"),
+                        getInt("exitSegmentSize"),
+                        playerSpawnOffset
+                    )
+
+                    templates[templateName] = template
+                } catch (e: Exception) {
+                    println("ERROR: Could not load template '$templateName' because of missing segment schematics")
+                }
+            }
+        }
+    }
+
+    private fun checkConfig(section: ConfigurationSection): Boolean {
+        return with (section) {
+            isInt("segmentSize")
+                    && isInt("exitSegmentSize")
+                    && isNumber("playerSpawnOffset.x")
+                    && isNumber("playerSpawnOffset.y")
+                    && isNumber("playerSpawnOffset.z")
         }
     }
 
